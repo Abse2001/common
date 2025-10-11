@@ -73,7 +73,7 @@ export const ArduinoShieldFootprint = () => (
     <platedhole
       holeDiameter={"1.016mm"}
       portHints={["pin8"]}
-      name="GND1"
+      name="GND2"
       pcbX={11.35}
       pcbY={-23.99}
       outerDiameter={"1.88mm"}
@@ -82,7 +82,7 @@ export const ArduinoShieldFootprint = () => (
     <platedhole
       holeDiameter={"1.016mm"}
       portHints={["pin9"]}
-      name="GND0"
+      name="GND1"
       pcbX={8.79}
       pcbY={-23.99}
       outerDiameter={"1.88mm"}
@@ -134,8 +134,8 @@ export const ArduinoShieldFootprint = () => (
       shape="circle"
     />
     <silkscreentext text="VIN" fontSize={0.8} pcbX={13.91} pcbY={-21.99} />
-    <silkscreentext text="GND1" fontSize={0.8} pcbX={11.35} pcbY={-21.99} />
-    <silkscreentext text="GND0" fontSize={0.8} pcbX={8.79} pcbY={-21.99} />
+    <silkscreentext text="GND2" fontSize={0.8} pcbX={11.35} pcbY={-21.99} />
+    <silkscreentext text="GND1" fontSize={0.8} pcbX={8.79} pcbY={-21.99} />
     <silkscreentext text="V5" fontSize={0.8} pcbX={6.23} pcbY={-21.99} />
     <silkscreentext text="V3_3" fontSize={0.8} pcbX={3.67} pcbY={-21.99} />
     <silkscreentext text="RES" fontSize={0.8} pcbX={1.11} pcbY={-21.99} />
@@ -281,7 +281,7 @@ export const ArduinoShieldFootprint = () => (
     <platedhole
       holeDiameter={"1.016mm"}
       portHints={["pin29"]}
-      name="GND2"
+      name="GND3"
       pcbX={-5.36}
       pcbY={23.99}
       outerDiameter={"1.88mm"}
@@ -321,7 +321,7 @@ export const ArduinoShieldFootprint = () => (
     <silkscreentext text="D11" fontSize={0.8} pcbX={2.28} pcbY={22.2} />
     <silkscreentext text="D12" fontSize={0.8} pcbX={-0.28} pcbY={22.2} />
     <silkscreentext text="D13" fontSize={0.8} pcbX={-2.82} pcbY={22.2} />
-    <silkscreentext text="GND2" fontSize={0.8} pcbX={-5.36} pcbY={22.2} />
+    <silkscreentext text="GND3" fontSize={0.8} pcbX={-5.36} pcbY={22.2} />
     <silkscreentext text="AREF" fontSize={0.8} pcbX={-7.9} pcbY={22.2} />
     <silkscreentext text="SDA" fontSize={0.8} pcbX={-10.46} pcbY={22.2} />
     <silkscreentext text="SCL" fontSize={0.8} pcbX={-12.9} pcbY={22.2} />

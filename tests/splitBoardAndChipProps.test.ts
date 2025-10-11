@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test"
+import { expect, test } from "bun:test"
 import { splitBoardAndChipProps } from "../util/splitBoardAndChipProps"
 
 test("splits board-specific props to boardProps and others to chipProps", () => {
@@ -9,6 +9,9 @@ test("splits board-specific props to boardProps and others to chipProps", () => 
     boardAnchorAlignment: "center",
     boardAnchorPosition: [0, 0],
     schWidth: 2,
+    connections: {
+      pin1: "net.GND",
+    },
   }
 
   const { boardProps, chipProps } = splitBoardAndChipProps(props)
@@ -25,5 +28,8 @@ test("splits board-specific props to boardProps and others to chipProps", () => 
     name: "U1",
     pcbX: "10mm",
     schWidth: 2,
+    connections: {
+      pin1: "net.GND",
+    },
   })
 })
