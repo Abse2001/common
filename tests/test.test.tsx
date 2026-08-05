@@ -1,14 +1,16 @@
-import { test, expect } from "bun:test"
+import { expect, test } from "bun:test"
 import { Circuit } from "tscircuit"
-import { ArduinoShield } from "../lib/ArduinoShield/ArduinoShield.circuit"
-import { RaspberryPiHatBoard } from "../lib/RaspberryPiHatBoard/RaspberryPiHatBoard.circuit"
-import { MicroModBoard } from "../lib/MicroModBoard/MicroModBoard"
-import { XiaoBoard } from "../lib/XiaoBoard/XiaoBoard.circuit"
 import {
   AudioAmplifier3W_PAM8403,
   Microcontroller_RP2040,
   PowerBoost_MT3608,
 } from "../index"
+import { ArduinoShield } from "../lib/ArduinoShield/ArduinoShield.circuit"
+import { MicroModBoard } from "../lib/MicroModBoard/MicroModBoard"
+import { ProMicroBoard } from "../lib/ProMicroBoard/ProMicroBoard.circuit"
+import { RaspberryPiHatBoard } from "../lib/RaspberryPiHatBoard/RaspberryPiHatBoard.circuit"
+import { XiaoBoard } from "../lib/XiaoBoard/XiaoBoard.circuit"
+
 test("test", () => {
   expect(ArduinoShield).toBeDefined()
   expect(RaspberryPiHatBoard).toBeDefined()
@@ -353,6 +355,50 @@ test("Microcontroller_RP2040 renders its complete support circuit", async () => 
       expect(schematicPort.is_connected).toBe(true)
     }
   }
+  for (const ledName of ["D1", "D_PWR"]) {
+    const ledComponent = circuit.db.source_component.getWhere({
+      name: ledName,
+    })!
+    const ledPorts = circuit.db.source_port
+      .list()
+      .filter(
+        (port) => port.source_component_id === ledComponent.source_component_id,
+      )
+      .sort((a, b) => (a.pin_number ?? 0) - (b.pin_number ?? 0))
+
+    expect(ledPorts[0].pin_number).toBe(1)
+    expect(ledPorts[0].port_hints).toContain("anode")
+    expect(ledPorts[0].port_hints).toContain("pos")
+    expect(ledPorts[0].port_hints).not.toContain("cathode")
+    expect(ledPorts[1].pin_number).toBe(2)
+    expect(ledPorts[1].port_hints).toContain("cathode")
+    expect(ledPorts[1].port_hints).toContain("neg")
+    expect(ledPorts[1].port_hints).not.toContain("anode")
+
+    const pcbComponent = circuit.db.pcb_component.getWhere({
+      source_component_id: ledComponent.source_component_id,
+    })!
+    const pcbPads = circuit.db.pcb_smtpad.list({
+      pcb_component_id: pcbComponent.pcb_component_id,
+    })
+    const cathodePad = pcbPads.find((pad) =>
+      pad.port_hints?.includes("cathode"),
+    )!
+    const anodePad = pcbPads.find((pad) => pad.port_hints?.includes("anode"))!
+
+    expect(cathodePad.port_hints).toContain("pin2")
+    expect(anodePad.port_hints).toContain("pin1")
+    expect(cathodePad.pcb_port_id).toBe(
+      circuit.db.pcb_port.getWhere({
+        source_port_id: ledPorts[1].source_port_id,
+      })!.pcb_port_id,
+    )
+    expect(anodePad.pcb_port_id).toBe(
+      circuit.db.pcb_port.getWhere({
+        source_port_id: ledPorts[0].source_port_id,
+      })!.pcb_port_id,
+    )
+  }
   expect(
     circuitJson.filter((element) => element.type.endsWith("_error")),
   ).toEqual([])
@@ -395,4 +441,73 @@ test("ArduinoShield uses a default chip name when chipProps.name is omitted", ()
   const chip = element.props.children[0]
   expect(chip.type).toBe("chip")
   expect(chip.props.name).toBe("ArduinoShield_chip")
+})
+
+test("RaspberryPiHatBoard forwards top-level name prop to chip", () => {
+  const element = RaspberryPiHatBoard({
+    name: "HAT1",
+  }) as any
+
+  const chip = element.props.children[0]
+  expect(chip.type).toBe("chip")
+  expect(chip.props.name).toBe("HAT1")
+})
+
+test("ArduinoShield forwards top-level name prop to chip", () => {
+  const element = ArduinoShield({
+    name: "SHIELD1",
+    chipProps: {
+      name: "LEGACY_NAME",
+    },
+  }) as any
+
+  const chip = element.props.children[0]
+  expect(chip.type).toBe("chip")
+  expect(chip.props.name).toBe("SHIELD1")
+})
+
+test("ArduinoShield top-level name survives a complete circuit render", async () => {
+  const circuit = new Circuit()
+
+  circuit.add(
+    <ArduinoShield name="SHIELD1" boardProps={{ routingDisabled: true }} />,
+  )
+  await circuit.renderUntilSettled()
+
+  expect(
+    circuit.db.source_component.getWhere({ name: "SHIELD1" }),
+  ).toBeDefined()
+  expect(
+    circuit.db.source_component.getWhere({ name: "SHIELD1_chip" }),
+  ).toBeUndefined()
+})
+
+test("MicroModBoard forwards top-level name prop to chip", () => {
+  const element = MicroModBoard({
+    name: "MICROMOD1",
+  }) as any
+
+  const chip = element.props.children[0]
+  expect(chip.type).toBe("chip")
+  expect(chip.props.name).toBe("MICROMOD1")
+})
+
+test("ProMicroBoard forwards top-level name prop to chip", () => {
+  const element = ProMicroBoard({
+    name: "PROMICRO1",
+  }) as any
+
+  const chip = element.props.children[0]
+  expect(chip.type).toBe("chip")
+  expect(chip.props.name).toBe("PROMICRO1")
+})
+
+test("XiaoBoard forwards top-level name prop to chip", () => {
+  const element = XiaoBoard({
+    name: "XIAO1",
+  }) as any
+
+  const chip = element.props.children[0]
+  expect(chip.type).toBe("chip")
+  expect(chip.props.name).toBe("XIAO1")
 })
